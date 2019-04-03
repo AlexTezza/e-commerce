@@ -12,6 +12,36 @@ class User extends Model {
     const SECRET = "Ecommerce_Secret";
     const SECRET_IV = "Ecommerce_Secret";
 
+    public static function getFromSession($inadmin = true) {
+
+        $user = new User();
+
+        if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0) {
+            $user->setData($_SESSION[User::SESSION]);
+        }
+
+        return $user;
+    }
+
+    public static function checkLogin($inadmin) {
+        if (
+            !isset($_SESSION[User::SESSION])
+            ||
+            !$_SESSION[User::SESSION]
+            ||
+            !(int)$_SESSION[User::SESSION]["iduser"] > 0
+        ) {
+            // Nâo esta logado
+            return false;
+        } else if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+            return true;
+        } else if ($inadmin === false) {
+            return true;
+        } else {
+            return false;
+        } 
+    }
+
     public static function login($login, $password) {
 
         $sql = new Sql();
@@ -39,11 +69,7 @@ class User extends Model {
     }
 
     public static function verifyLogin($inadmin = true) {
-        if (!isset($_SESSION[User::SESSION])
-            || !$_SESSION[User::SESSION]
-            || !$_SESSION[User::SESSION]["iduser"] > 0
-            || (bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin) {
-
+        if (User::checkLogin($inadmin)) {
             header("Location: /admin/login");
             exit;
         }
