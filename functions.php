@@ -11,8 +11,7 @@ function checkLogin($inadmin = true) {
 }
 
 function getUserName() {
-    $user = User::getFromSession();
-    $user->get($user->getiduser());    
+    $user = User::getFromSession();  
     return $user->getdesperson();
 }
 
